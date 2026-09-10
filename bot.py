@@ -8,7 +8,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ErrorEvent
 
 from config import BOT_TOKEN
-from handlers import broadcast, catalog, common, start
+from handlers import broadcast, catalog, common, start, stats
 from middlewares.track_user import TrackUserMiddleware
 
 logger = logging.getLogger(__name__)
@@ -23,13 +23,14 @@ async def main() -> None:
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher(storage=MemoryStorage())
 
-    # Запоминаем каждого, кто написал боту, — нужно для рассылки.
+    # Запоминаем каждого, кто написал боту, — нужно для рассылки и статистики.
     dp.update.outer_middleware(TrackUserMiddleware())
 
     # Порядок важен: специфичные роутеры — раньше общего fallback-обработчика.
     dp.include_router(start.router)
     dp.include_router(catalog.router)
     dp.include_router(broadcast.router)
+    dp.include_router(stats.router)
     dp.include_router(common.router)  # ловит всё, что не подошло другим роутерам
 
     @dp.error()

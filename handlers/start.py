@@ -6,7 +6,8 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from config import WELCOME_PHOTO_ID
+from config import LEAD_NOTIFY_CHAT_ID, WELCOME_PHOTO_ID
+from data.storage import add_user
 from data.texts import MAIN_MENU_PROMPT, WELCOME_TEXT, WHOAMI_TEXT
 from keyboards.main import main_menu_keyboard
 
@@ -35,6 +36,21 @@ async def send_welcome(message: Message) -> None:
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext) -> None:
     await state.clear()
+
+    # Уведомление о новом лиде — только при первом /start от этого юзера.
+    # add_user возвращает True, если пользователь раньше не писал боту.
+    user = message.from_user
+    if user is not None and not user.is_bot:
+        is_new = add_user(user)
+        if is_new and LEAD_NOTIFY_CHAT_ID:
+            try:
+                await message.bot.send_message(
+                    LEAD_NOTIFY_CHAT_ID,
+                    f"🔥 Новый лид\n@{user.username or '—'}",
+                )
+            except Exception:
+                logger.warning("Не удалось уведомить о новом лиде %s", user.id)
+
     await send_welcome(message)
 
 
@@ -48,7 +64,8 @@ async def cmd_menu(message: Message, state: FSMContext) -> None:
 @router.message(Command("whoami"))
 async def cmd_whoami(message: Message) -> None:
     """Служебная команда: чтобы узнать свой chat_id — он нужен тренеру,
-    чтобы вписать TRAINER_CHAT_ID в .env и получать заявки об оплате."""
+    чтобы вписать TRAINER_CHAT_ID в .env, и @tema_evgenevich, чтобы
+    вписать LEAD_NOTIFY_CHAT_ID."""
     await message.answer(
         WHOAMI_TEXT.format(
             chat_id=message.chat.id,
