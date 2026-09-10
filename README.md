@@ -159,3 +159,4 @@ docker run -d --restart unless-stopped --env-file .env --name tolmachev-bot tolm
   без callback-данных, поэтому Telegram открывает личку клиента с тренером
   напрямую, минуя бота.
 # tolmachev1
+# tolmachev1

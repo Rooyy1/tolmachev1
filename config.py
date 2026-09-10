@@ -33,7 +33,7 @@ LEAD_NOTIFY_CHAT_ID = int(os.getenv("LEAD_NOTIFY_CHAT_ID", "0") or 0)
 # в этом случае бот тихо отправит приветствие без фото (см. handlers/start.py).
 WELCOME_PHOTO_ID = os.getenv(
     "WELCOME_PHOTO_ID",
-    "AgACAgIAAxkBAANHap3abUBoWdf-BSPQxJcHDiLAzXEAAqEoaxtrt_FIX-xsL-BazEgBAAMCAAN5AAM9BA",
+    "AgACAgIAAxkBAAM0aqK7uYmInWFEOHTNSUhYMH59DQwAAisiaxv56hhJWtpja2bcWpoBAAMCAAN5AAM9BA",
 )
 
 if not BOT_TOKEN:
